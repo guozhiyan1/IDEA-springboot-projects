@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bjpowernode.springboot.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.bjpowernode.springboot.model.User">
+    <!--id标签只能修改主键字段；
+    除了主键以外字段，用result修饰
+    column 数据库中的字段名称
+    property 映射对象的属性名称
+    jdbcType 列再数据库中字段的类型（可以省略）
+    resultmap 1.数据库中字段名称和实体类对象属性名称不一致时，可以进行转换 ；2.查询结果不在一个表中，可以自定义一个结果集
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="phone" jdbcType="BIGINT" property="phone" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+  </resultMap>
+  <!-- sql语句片段，将公共的部分抽取出来
+  通过incluse标签引用sql语句片段 前缀：prefix 后缀：suffix 去除多余的suffixOverrides；set可以去掉多余的逗号；数据库字段名称有多个单词构成（—），会按照驼峰规则生成-->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from users
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.bjpowernode.springboot.model.User">
+    insert into users (id, username, age, 
+      phone, email)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
+      #{phone,jdbcType=BIGINT}, #{email,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bjpowernode.springboot.model.User">
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id!=null">id,</if>
+      <if test="username!=null">username,</if>
+      <if test="age!=null">age,</if>
+      <if test="phone!=null">phone,</if>
+      <if test="email!=null">email,</if>
+    </trim>
+    <trim prefix="values(" suffix=")" suffixOverrides=",">
+      <if test="id!=null">#{id,jdbcType=INTEGER},</if>
+      <if test="username!=null">#{username,jdbcType=VARCHAR},</if>
+      <if test="age!=null">#{age,jdbcType=INTEGER},</if>
+      <if test="phone!=null">#{phone,jdbcType=BIGINT},</if>
+      <if test="email!=null">#{email,jdbcType=VARCHAR}),</if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.bjpowernode.springboot.model.User">
+    update users
+    set username = #{username,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=BIGINT},
+      email = #{email,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateSelective" parameterType="com.bjpowernode.springboot.model.User">
+    update users
+    <set>
+      <if test="username!=null">username = #{username,jdbcType=VARCHAR},</if>
+      <if test="age!=null">age = #{age,jdbcType=INTEGER},</if>
+      <if test="phone!=null">phone = #{phone,jdbcType=BIGINT},</if>
+      <if test="email!=null">email =#{email,jdbcType=VARCHAR}),</if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, username, age, phone, email
+    from users
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, username, age, phone, email
+    from users
+  </select>
+</mapper>
